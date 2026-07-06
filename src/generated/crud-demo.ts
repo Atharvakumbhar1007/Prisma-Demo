@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma.js";
+import { Prisma } from "../prisma.js";
 
 async function crudDemo() {
     const existingUser = await Prisma.user.findUnique({
