@@ -1,57 +1,91 @@
-import {Router, type Request, type Response} from "express";
-import {prisma} from "../generated/prisma.js";
+import { Router, type Request, type Response } from "express";
+import { prisma } from "../generated/prisma.js";
+import { CreateUserDto } from "../dto/create-user.dto.js";
 
 const router = Router();
-router.get("/", async function(req: Request, res:Response) {
-    const users = await prisma.user.findMany();
-    res.json(users);
+
+// Get all users
+router.get("/", async (req: Request, res: Response) => {
+  const users = await prisma.user.findMany();
+  res.json(users);
 });
 
-router.get("/:id", async function(req: Request, res:Response) {
-    const id = Number(req.params.id);
+// Get user by ID
+router.get("/:id", async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
 
-    const user = await prisma.user.findUnique({
-        where: {id}
-    });
+  const user = await prisma.user.findUnique({
+    where: { id },
+  });
 
-    if (!user) {
-        return res.sendStatus(404).json({
-            message:"User not found"
-        });
-    }
-    return res.json(user);
-});
-router.post("/", async function(req: Request, res:Response){
-    const {name, email} = req.body;
-    const user = await prisma.user.create({
-        data: {
-            name,
-            email
-        }
+  if (!user) {
+    return res.status(404).json({
+      message: "User not found",
     });
-    res.status(201).json(user);
-}); 
+  }
 
-router.put("/:id", async function(req: Request, res:Response){
-    const id = Number(req.params.id);
-    const {name, email} = req.body;
-    const user = await prisma.user.update({
-        where: {id},
-        data: {
-            name,email
-        }
-    });
-    res.json(user);
+  return res.json(user);
 });
 
-router.delete("/:id", async function(req: Request, res:Response){
-    const id = Number(req.params.id);
-    const user = await prisma.user.delete({
-        where: {id}
+// Create multiple users
+router.post(
+  "/multiple",
+  async (
+    req: Request<{}, {}, CreateUserDto[]>,
+    res: Response
+  ) => {
+    const data = req.body;
+
+    const result = await prisma.user.createMany({
+      data,
+     // skipDuplicates: true,
     });
-    res.json({
-        message:"User Deleted"
-    });
+
+    return res.status(201).json(result);
+  }
+);
+
+// Create one user
+router.post("/", async (req: Request, res: Response) => {
+  const { name, email } = req.body;
+
+  const user = await prisma.user.create({
+    data: {
+      name,
+      email,
+    },
+  });
+
+  res.status(201).json(user);
+});
+
+// Update user
+router.put("/:id", async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+  const { name, email } = req.body;
+
+  const user = await prisma.user.update({
+    where: { id },
+    data: {
+      name,
+      email,
+    },
+  });
+
+  res.json(user);
+});
+
+// Delete user
+router.delete("/:id", async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+
+  await prisma.user.delete({
+    where: { id },
+  });
+
+  res.json({
+    message: "User Deleted",
+  });
 });
 
 export default router;

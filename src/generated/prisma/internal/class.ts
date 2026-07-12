@@ -11,49 +11,65 @@
  * Please import the `PrismaClient` class from the `client.ts` file instead.
  */
 
-import * as runtime from "@prisma/client/runtime/client"
-import type * as Prisma from "./prismaNamespace.ts"
+import * as runtime from "@prisma/client/runtime/library"
+import type * as Prisma from "./prismaNamespace.js"
 
 
 const config: runtime.GetPrismaClientConfig = {
-  "previewFeatures": [],
-  "clientVersion": "7.8.0",
-  "engineVersion": "3c6e192761c0362d496ed980de936e2f3cebcd3a",
+  "generator": {
+    "name": "client",
+    "provider": {
+      "fromEnvVar": null,
+      "value": "prisma-client"
+    },
+    "output": {
+      "value": "C:\\SPRK TECT\\Prisma Demo\\src\\generated\\prisma",
+      "fromEnvVar": null
+    },
+    "config": {
+      "engineType": "library"
+    },
+    "binaryTargets": [
+      {
+        "fromEnvVar": null,
+        "value": "windows",
+        "native": true
+      }
+    ],
+    "previewFeatures": [],
+    "sourceFilePath": "C:\\SPRK TECT\\Prisma Demo\\prisma\\schema.prisma",
+    "isCustomOutput": true
+  },
+  "relativePath": "../../../prisma",
+  "clientVersion": "6.19.3",
+  "engineVersion": "c2990dca591cba766e3b7ef5d9e8a84796e47ab7",
+  "datasourceNames": [
+    "db"
+  ],
   "activeProvider": "sqlite",
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Get a free hosted Postgres database in seconds: `npx create-db`\n\ngenerator client {\n  provider = \"prisma-client\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n}\n\nenum Role {\n  USER\n  EDITOR\n  ADMIN\n}\n\nenum PostStatus {\n  DRAFT\n  PUBLISHED\n  ARCHIVED\n}\n\nmodel User {\n  id        Int      @id @default(autoincrement())\n  email     String   @unique\n  name      String?\n  role      Role     @default(USER)\n  //role      String    @default(\"USER\")\n  createdAt DateTime @default(now())\n  posts     Post[] //one user can have many posts\n\n  @@map(\"users\")\n}\n\nmodel Post {\n  id        Int        @id @default(autoincrement())\n  title     String\n  content   String?\n  published Boolean    @default(false)\n  createdAt DateTime   @default(now())\n  status    PostStatus @default(DRAFT)\n  author    User       @relation(fields: [authorId], references: [id])\n  authorId  Int\n\n  @@index([title])\n  @@map(\"posts\")\n}\n\nmodel Profile {\n  id        Int     @id @default(autoincrement())\n  bio       String?\n  avatarUrl String? @map(\"avatar_url\")\n  website   String?\n  score     Float   @default(0)\n\n  @@map(\"profiles\")\n}\n\n//nodemon - ts-node-dev\n",
+  "inlineDatasources": {
+    "db": {
+      "url": {
+        "fromEnvVar": "DATABASE_URL",
+        "value": null
+      }
+    }
+  },
+  "inlineSchema": "generator client {\n  provider = \"prisma-client\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = env(\"DATABASE_URL\")\n}\n\nenum Role {\n  USER\n  EDITOR\n  ADMIN\n}\n\nenum PostStatus {\n  DRAFT\n  PUBLISHED\n  ARCHIVED\n}\n\nmodel User {\n  id        Int      @id @default(autoincrement())\n  email     String   @unique\n  name      String?\n  role      Role     @default(USER)\n  createdAt DateTime @default(now())\n\n  posts Post[]\n\n  @@map(\"users\")\n}\n\nmodel Post {\n  id        Int        @id @default(autoincrement())\n  title     String\n  content   String?\n  published Boolean    @default(false)\n  createdAt DateTime   @default(now())\n  status    PostStatus @default(DRAFT)\n\n  authorId Int\n  author   User @relation(fields: [authorId], references: [id])\n\n  categories PostOnCategory[]\n\n  @@index([title])\n  @@map(\"posts\")\n}\n\nmodel Category {\n  id   Int    @id @default(autoincrement())\n  name String @unique\n\n  posts PostOnCategory[]\n}\n\nmodel PostOnCategory {\n  postId     Int\n  categoryId Int\n  assignedAt DateTime @default(now())\n\n  post     Post     @relation(fields: [postId], references: [id])\n  category Category @relation(fields: [categoryId], references: [id])\n\n  @@id([postId, categoryId])\n}\n\nmodel Profile {\n  id        Int     @id @default(autoincrement())\n  bio       String?\n  avatarUrl String? @map(\"avatar_url\")\n  website   String?\n  score     Float   @default(0)\n\n  @@map(\"profiles\")\n}\n",
+  "inlineSchemaHash": "90b7acacef445c1b5f6d8df83b8c128c16667fa8730e594c0e4a96d8ae1c4998",
+  "copyEngine": true,
   "runtimeDataModel": {
     "models": {},
     "enums": {},
     "types": {}
   },
-  "parameterizationSchema": {
-    "strings": [],
-    "graph": ""
-  }
+  "dirname": ""
 }
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"Role\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"posts\",\"kind\":\"object\",\"type\":\"Post\",\"relationName\":\"PostToUser\"}],\"dbName\":\"users\"},\"Post\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"content\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"published\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"PostStatus\"},{\"name\":\"author\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"PostToUser\"},{\"name\":\"authorId\",\"kind\":\"scalar\",\"type\":\"Int\"}],\"dbName\":\"posts\"},\"Profile\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"bio\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"avatarUrl\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"avatar_url\"},{\"name\":\"website\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"score\",\"kind\":\"scalar\",\"type\":\"Float\"}],\"dbName\":\"profiles\"}},\"enums\":{},\"types\":{}}")
-config.parameterizationSchema = {
-  strings: JSON.parse("[\"where\",\"orderBy\",\"cursor\",\"author\",\"posts\",\"_count\",\"User.findUnique\",\"User.findUniqueOrThrow\",\"User.findFirst\",\"User.findFirstOrThrow\",\"User.findMany\",\"data\",\"User.createOne\",\"User.createMany\",\"User.createManyAndReturn\",\"User.updateOne\",\"User.updateMany\",\"User.updateManyAndReturn\",\"create\",\"update\",\"User.upsertOne\",\"User.deleteOne\",\"User.deleteMany\",\"having\",\"_avg\",\"_sum\",\"_min\",\"_max\",\"User.groupBy\",\"User.aggregate\",\"Post.findUnique\",\"Post.findUniqueOrThrow\",\"Post.findFirst\",\"Post.findFirstOrThrow\",\"Post.findMany\",\"Post.createOne\",\"Post.createMany\",\"Post.createManyAndReturn\",\"Post.updateOne\",\"Post.updateMany\",\"Post.updateManyAndReturn\",\"Post.upsertOne\",\"Post.deleteOne\",\"Post.deleteMany\",\"Post.groupBy\",\"Post.aggregate\",\"Profile.findUnique\",\"Profile.findUniqueOrThrow\",\"Profile.findFirst\",\"Profile.findFirstOrThrow\",\"Profile.findMany\",\"Profile.createOne\",\"Profile.createMany\",\"Profile.createManyAndReturn\",\"Profile.updateOne\",\"Profile.updateMany\",\"Profile.updateManyAndReturn\",\"Profile.upsertOne\",\"Profile.deleteOne\",\"Profile.deleteMany\",\"Profile.groupBy\",\"Profile.aggregate\",\"AND\",\"OR\",\"NOT\",\"id\",\"bio\",\"avatarUrl\",\"website\",\"score\",\"equals\",\"in\",\"notIn\",\"lt\",\"lte\",\"gt\",\"gte\",\"not\",\"contains\",\"startsWith\",\"endsWith\",\"title\",\"content\",\"published\",\"createdAt\",\"PostStatus\",\"status\",\"authorId\",\"email\",\"name\",\"Role\",\"role\",\"every\",\"some\",\"none\",\"is\",\"isNot\",\"connectOrCreate\",\"upsert\",\"createMany\",\"set\",\"disconnect\",\"delete\",\"connect\",\"updateMany\",\"deleteMany\",\"increment\",\"decrement\",\"multiply\",\"divide\"]"),
-  graph: "pgEgMAkEAAByACA-AABuADA_AAAJABBAAABuADBBAgAAAAFUQABxACFYAQAAAAFZAQBbACFbAABwWyIBAAAAAQAgCwMAAHYAID4AAHMAMD8AAAMAEEAAAHMAMEECAFoAIVEBAG8AIVIBAFsAIVMgAHQAIVRAAHEAIVYAAHVWIlcCAFoAIQIDAACgAQAgUgAAdwAgCwMAAHYAID4AAHMAMD8AAAMAEEAAAHMAMEECAAAAAVEBAG8AIVIBAFsAIVMgAHQAIVRAAHEAIVYAAHVWIlcCAFoAIQMAAAADACABAAAEADACAAAFACABAAAAAwAgAQAAAAEAIAkEAAByACA-AABuADA_AAAJABBAAABuADBBAgBaACFUQABxACFYAQBvACFZAQBbACFbAABwWyICBAAAnwEAIFkAAHcAIAMAAAAJACABAAAKADACAAABACADAAAACQAgAQAACgAwAgAAAQAgAwAAAAkAIAEAAAoAMAIAAAEAIAYEAACeAQAgQQIAAAABVEAAAAABWAEAAAABWQEAAAABWwAAAFsCAQsAAA4AIAVBAgAAAAFUQAAAAAFYAQAAAAFZAQAAAAFbAAAAWwIBCwAAEAAwAQsAABAAMAYEAACRAQAgQQIAfwAhVEAAhwEAIVgBAIUBACFZAQB9ACFbAACQAVsiAgAAAAEAIAsAABMAIAVBAgB_ACFUQACHAQAhWAEAhQEAIVkBAH0AIVsAAJABWyICAAAACQAgCwAAFQAgAgAAAAkAIAsAABUAIAMAAAABACASAAAOACATAAATACABAAAAAQAgAQAAAAkAIAYFAACLAQAgGAAAjAEAIBkAAI8BACAaAACOAQAgGwAAjQEAIFkAAHcAIAg-AABqADA_AAAcABBAAABqADBBAgBPACFUQABgACFYAQBeACFZAQBQACFbAABrWyIDAAAACQAgAQAAGwAwFwAAHAAgAwAAAAkAIAEAAAoAMAIAAAEAIAEAAAAFACABAAAABQAgAwAAAAMAIAEAAAQAMAIAAAUAIAMAAAADACABAAAEADACAAAFACADAAAAAwAgAQAABAAwAgAABQAgCAMAAIoBACBBAgAAAAFRAQAAAAFSAQAAAAFTIAAAAAFUQAAAAAFWAAAAVgJXAgAAAAEBCwAAJAAgB0ECAAAAAVEBAAAAAVIBAAAAAVMgAAAAAVRAAAAAAVYAAABWAlcCAAAAAQELAAAmADABCwAAJgAwCAMAAIkBACBBAgB_ACFRAQCFAQAhUgEAfQAhUyAAhgEAIVRAAIcBACFWAACIAVYiVwIAfwAhAgAAAAUAIAsAACkAIAdBAgB_ACFRAQCFAQAhUgEAfQAhUyAAhgEAIVRAAIcBACFWAACIAVYiVwIAfwAhAgAAAAMAIAsAACsAIAIAAAADACALAAArACADAAAABQAgEgAAJAAgEwAAKQAgAQAAAAUAIAEAAAADACAGBQAAgAEAIBgAAIEBACAZAACEAQAgGgAAgwEAIBsAAIIBACBSAAB3ACAKPgAAXQAwPwAAMgAQQAAAXQAwQQIATwAhUQEAXgAhUgEAUAAhUyAAXwAhVEAAYAAhVgAAYVYiVwIATwAhAwAAAAMAIAEAADEAMBcAADIAIAMAAAADACABAAAEADACAAAFACAIPgAAWQAwPwAAOAAQQAAAWQAwQQIAAAABQgEAWwAhQwEAWwAhRAEAWwAhRQgAXAAhAQAAADUAIAEAAAA1ACAIPgAAWQAwPwAAOAAQQAAAWQAwQQIAWgAhQgEAWwAhQwEAWwAhRAEAWwAhRQgAXAAhA0IAAHcAIEMAAHcAIEQAAHcAIAMAAAA4ACABAAA5ADACAAA1ACADAAAAOAAgAQAAOQAwAgAANQAgAwAAADgAIAEAADkAMAIAADUAIAVBAgAAAAFCAQAAAAFDAQAAAAFEAQAAAAFFCAAAAAEBCwAAPQAgBUECAAAAAUIBAAAAAUMBAAAAAUQBAAAAAUUIAAAAAQELAAA_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-AABqADA_AAAcABBAAABqADBBAgBPACFUQABgACFYAQBeACFZAQBQACFbAABrWyIHBQAAUwAgGgAAbQAgGwAAbQAgRgAAAFsCRwAAAFsISAAAAFsITQAAbFsiBwUAAFMAIBoAAG0AIBsAAG0AIEYAAABbAkcAAABbCEgAAABbCE0AAGxbIgRGAAAAWwJHAAAAWwhIAAAAWwhNAABtWyIJBAAAcgAgPgAAbgAwPwAACQAQQAAAbgAwQQIAWgAhVEAAcQAhWAEAbwAhWQEAWwAhWwAAcFsiC0YBAAAAAUcBAAAABEgBAAAABEkBAAAAAUoBAAAAAUsBAAAAAUwBAAAAAU0BAGkAIU4BAAAAAU8BAAAAAVABAAAAAQRGAAAAWwJHAAAAWwhIAAAAWwhNAABtWyIIRkAAAAABR0AAAAAESEAAAAAESUAAAAABSkAAAAABS0AAAAABTEAAAAABTUAAZQAhA1wAAAMAIF0AAAMAIF4AAAMAIAsDAAB2ACA-AABzADA_AAADABBAAABzADBBAgBaACFRAQBvACFSAQBbACFTIAB0ACFUQABxACFWAAB1ViJXAgBaACECRiAAAAABTSAAZwAhBEYAAABWAkcAAABWCEgAAABWCE0AAGNWIgsEAAByACA-AABuADA_AAAJABBAAABuADBBAgBaACFUQABxACFYAQBvACFZAQBbACFbAABwWyJfAAAJACBgAAAJACAAAAAAAAABZAEAAAABBWQIAAAAAWoIAAAAAWsIAAAAAWwIAAAAAW0IAAAAAQVkAgAAAAFqAgAAAAFrAgAAAAFsAgAAAAFtAgAAAAEAAAAAAAFkAQAAAAEBZCAAAAABAWRAAAAAAQFkAAAAVgIFEgAAogEAIBMAAKUBACBhAACjAQAgYgAApAEAIGcAAAEAIAMSAACiAQAgYQAAowEAIGcAAAEAIAAAAAAAAWQAAABbAgsSAACSAQAwEwAAlwEAMGEAAJMBADBiAACUAQAwYwAAlQEAIGQAAJYBADBlAACWAQAwZgAAlgEAMGcAAJYBADBoAACYAQAwaQAAmQEAMAZBAgAAAAFRAQAAAAFSAQAAAAFTIAAAAAFUQAAAAAFWAAAAVgICAAAABQAgEgAAnQEAIAMAAAAFACASAACdAQAgEwAAnAEAIAELAAChAQAwCwMAAHYAID4AAHMAMD8AAAMAEEAAAHMAMEECAAAAAVEBAG8AIVIBAFsAIVMgAHQAIVRAAHEAIVYAAHVWIlcCAFoAIQIAAAAFACALAACcAQAgAgAAAJoBACALAACbAQAgCj4AAJkBADA_AACaAQAQQAAAmQEAMEECAFoAIVEBAG8AIVIBAFsAIVMgAHQAIVRAAHEAIVYAAHVWIlcCAFoAIQo-AACZAQAwPwAAmgEAEEAAAJkBADBBAgBaACFRAQBvACFSAQBbACFTIAB0ACFUQABxACFWAAB1ViJXAgBaACEGQQIAfwAhUQEAhQEAIVIBAH0AIVMgAIYBACFUQACHAQAhVgAAiAFWIgZBAgB_ACFRAQCFAQAhUgEAfQAhUyAAhgEAIVRAAIcBACFWAACIAVYiBkECAAAAAVEBAAAAAVIBAAAAAVMgAAAAAVRAAAAAAVYAAABWAgQSAACSAQAwYQAAkwEAMGMAAJUBACBnAACWAQAwAAIEAACfAQAgWQAAdwAgBkECAAAAAVEBAAAAAVIBAAAAAVMgAAAAAVRAAAAAAVYAAABWAgVBAgAAAAFUQAAAAAFYAQAAAAFZAQAAAAFbAAAAWwICAAAAAQAgEgAAogEAIAMAAAAJACASAACiAQAgEwAApgEAIAcAAAAJACALAACmAQAgQQIAfwAhVEAAhwEAIVgBAIUBACFZAQB9ACFbAACQAVsiBUECAH8AIVRAAIcBACFYAQCFAQAhWQEAfQAhWwAAkAFbIgIEBgIFAAMBAwABAQQHAAAAAAUFAAgYAAkZAAoaAAsbAAwAAAAAAAUFAAgYAAkZAAoaAAsbAAwBAwABAQMAAQUFABEYABIZABMaABQbABUAAAAAAAUFABEYABIZABMaABQbABUAAAAFBQAbGAAcGQAdGgAeGwAfAAAAAAAFBQAbGAAcGQAdGgAeGwAfBgIBBwgBCAsBCQwBCg0BDA8BDREEDhIFDxQBEBYEERcGFBgBFRkBFhoEHB0HHR4NHh8CHyACICECISICIiMCIyUCJCcEJSgOJioCJywEKC0PKS4CKi8CKzAELDMQLTQWLjYXLzcXMDoXMTsXMjwXMz4XNEAENUEYNkMXN0UEOEYZOUcXOkgXO0kEPEwaPU0g"
-}
+config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"dbName\":\"users\",\"schema\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"Int\",\"nativeType\":null,\"default\":{\"name\":\"autoincrement\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"email\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":true,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"name\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":false,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"role\",\"kind\":\"enum\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"Role\",\"nativeType\":null,\"default\":\"USER\",\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"DateTime\",\"nativeType\":null,\"default\":{\"name\":\"now\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"posts\",\"kind\":\"object\",\"isList\":true,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Post\",\"nativeType\":null,\"relationName\":\"PostToUser\",\"relationFromFields\":[],\"relationToFields\":[],\"isGenerated\":false,\"isUpdatedAt\":false}],\"primaryKey\":null,\"uniqueFields\":[],\"uniqueIndexes\":[],\"isGenerated\":false},\"Post\":{\"dbName\":\"posts\",\"schema\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"Int\",\"nativeType\":null,\"default\":{\"name\":\"autoincrement\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"title\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"content\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":false,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"published\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"Boolean\",\"nativeType\":null,\"default\":false,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"DateTime\",\"nativeType\":null,\"default\":{\"name\":\"now\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"status\",\"kind\":\"enum\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"PostStatus\",\"nativeType\":null,\"default\":\"DRAFT\",\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"authorId\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":true,\"hasDefaultValue\":false,\"type\":\"Int\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"author\",\"kind\":\"object\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"User\",\"nativeType\":null,\"relationName\":\"PostToUser\",\"relationFromFields\":[\"authorId\"],\"relationToFields\":[\"id\"],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"categories\",\"kind\":\"object\",\"isList\":true,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"PostOnCategory\",\"nativeType\":null,\"relationName\":\"PostToPostOnCategory\",\"relationFromFields\":[],\"relationToFields\":[],\"isGenerated\":false,\"isUpdatedAt\":false}],\"primaryKey\":null,\"uniqueFields\":[],\"uniqueIndexes\":[],\"isGenerated\":false},\"Category\":{\"dbName\":null,\"schema\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"Int\",\"nativeType\":null,\"default\":{\"name\":\"autoincrement\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"name\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":true,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"posts\",\"kind\":\"object\",\"isList\":true,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"PostOnCategory\",\"nativeType\":null,\"relationName\":\"CategoryToPostOnCategory\",\"relationFromFields\":[],\"relationToFields\":[],\"isGenerated\":false,\"isUpdatedAt\":false}],\"primaryKey\":null,\"uniqueFields\":[],\"uniqueIndexes\":[],\"isGenerated\":false},\"PostOnCategory\":{\"dbName\":null,\"schema\":null,\"fields\":[{\"name\":\"postId\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":true,\"hasDefaultValue\":false,\"type\":\"Int\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"categoryId\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":true,\"hasDefaultValue\":false,\"type\":\"Int\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"assignedAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"DateTime\",\"nativeType\":null,\"default\":{\"name\":\"now\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"post\",\"kind\":\"object\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Post\",\"nativeType\":null,\"relationName\":\"PostToPostOnCategory\",\"relationFromFields\":[\"postId\"],\"relationToFields\":[\"id\"],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"category\",\"kind\":\"object\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Category\",\"nativeType\":null,\"relationName\":\"CategoryToPostOnCategory\",\"relationFromFields\":[\"categoryId\"],\"relationToFields\":[\"id\"],\"isGenerated\":false,\"isUpdatedAt\":false}],\"primaryKey\":{\"name\":null,\"fields\":[\"postId\",\"categoryId\"]},\"uniqueFields\":[],\"uniqueIndexes\":[],\"isGenerated\":false},\"Profile\":{\"dbName\":\"profiles\",\"schema\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"Int\",\"nativeType\":null,\"default\":{\"name\":\"autoincrement\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"bio\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":false,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"avatarUrl\",\"dbName\":\"avatar_url\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":false,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"website\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":false,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"score\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"Float\",\"nativeType\":null,\"default\":0,\"isGenerated\":false,\"isUpdatedAt\":false}],\"primaryKey\":null,\"uniqueFields\":[],\"uniqueIndexes\":[],\"isGenerated\":false}},\"enums\":{\"Role\":{\"values\":[{\"name\":\"USER\",\"dbName\":null},{\"name\":\"EDITOR\",\"dbName\":null},{\"name\":\"ADMIN\",\"dbName\":null}],\"dbName\":null},\"PostStatus\":{\"values\":[{\"name\":\"DRAFT\",\"dbName\":null},{\"name\":\"PUBLISHED\",\"dbName\":null},{\"name\":\"ARCHIVED\",\"dbName\":null}],\"dbName\":null}},\"types\":{}}")
+config.engineWasm = undefined
+config.compilerWasm = undefined
 
-async function decodeBase64AsWasm(wasmBase64: string): Promise<WebAssembly.Module> {
-  const { Buffer } = await import('node:buffer')
-  const wasmArray = Buffer.from(wasmBase64, 'base64')
-  return new WebAssembly.Module(wasmArray)
-}
-
-config.compilerWasm = {
-  getRuntime: async () => await import("@prisma/client/runtime/query_compiler_fast_bg.sqlite.mjs"),
-
-  getQueryCompilerWasmModule: async () => {
-    const { wasm } = await import("@prisma/client/runtime/query_compiler_fast_bg.sqlite.wasm-base64.mjs")
-    return await decodeBase64AsWasm(wasm)
-  },
-
-  importName: "./query_compiler_fast_bg.js"
-}
 
 
 
@@ -67,14 +83,12 @@ export interface PrismaClientConstructor {
    * Type-safe database client for TypeScript
    * @example
    * ```
-   * const prisma = new PrismaClient({
-   *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
-   * })
+   * const prisma = new PrismaClient()
    * // Fetch zero or more Users
    * const users = await prisma.user.findMany()
    * ```
    * 
-   * Read more in our [docs](https://pris.ly/d/client).
+   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client).
    */
 
   new <
@@ -82,7 +96,7 @@ export interface PrismaClientConstructor {
     LogOpts extends LogOptions<Options> = LogOptions<Options>,
     OmitOpts extends Prisma.PrismaClientOptions['omit'] = Options extends { omit: infer U } ? U : Prisma.PrismaClientOptions['omit'],
     ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs
-  >(options: Prisma.Subset<Options, Prisma.PrismaClientOptions> ): PrismaClient<LogOpts, OmitOpts, ExtArgs>
+  >(options?: Prisma.Subset<Options, Prisma.PrismaClientOptions> ): PrismaClient<LogOpts, OmitOpts, ExtArgs>
 }
 
 /**
@@ -91,19 +105,17 @@ export interface PrismaClientConstructor {
  * Type-safe database client for TypeScript
  * @example
  * ```
- * const prisma = new PrismaClient({
- *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
- * })
+ * const prisma = new PrismaClient()
  * // Fetch zero or more Users
  * const users = await prisma.user.findMany()
  * ```
  * 
- * Read more in our [docs](https://pris.ly/d/client).
+ * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client).
  */
 
 export interface PrismaClient<
   in LogOpts extends Prisma.LogLevel = never,
-  in out OmitOpts extends Prisma.PrismaClientOptions['omit'] = undefined,
+  in out OmitOpts extends Prisma.PrismaClientOptions['omit'] = Prisma.PrismaClientOptions['omit'],
   in out ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs
 > {
   [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['other'] }
@@ -127,7 +139,7 @@ export interface PrismaClient<
    * const result = await prisma.$executeRaw`UPDATE User SET cool = ${true} WHERE email = ${'user@email.com'};`
    * ```
    *
-   * Read more in our [docs](https://pris.ly/d/raw-queries).
+   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
    */
   $executeRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): Prisma.PrismaPromise<number>;
 
@@ -139,7 +151,7 @@ export interface PrismaClient<
    * const result = await prisma.$executeRawUnsafe('UPDATE User SET cool = $1 WHERE email = $2 ;', true, 'user@email.com')
    * ```
    *
-   * Read more in our [docs](https://pris.ly/d/raw-queries).
+   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
    */
   $executeRawUnsafe<T = unknown>(query: string, ...values: any[]): Prisma.PrismaPromise<number>;
 
@@ -150,7 +162,7 @@ export interface PrismaClient<
    * const result = await prisma.$queryRaw`SELECT * FROM User WHERE id = ${1} OR email = ${'user@email.com'};`
    * ```
    *
-   * Read more in our [docs](https://pris.ly/d/raw-queries).
+   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
    */
   $queryRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): Prisma.PrismaPromise<T>;
 
@@ -162,7 +174,7 @@ export interface PrismaClient<
    * const result = await prisma.$queryRawUnsafe('SELECT * FROM User WHERE id = $1 OR email = $2;', 1, 'user@email.com')
    * ```
    *
-   * Read more in our [docs](https://pris.ly/d/raw-queries).
+   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
    */
   $queryRawUnsafe<T = unknown>(query: string, ...values: any[]): Prisma.PrismaPromise<T>;
 
@@ -178,11 +190,12 @@ export interface PrismaClient<
    * ])
    * ```
    * 
-   * Read more in our [docs](https://www.prisma.io/docs/orm/prisma-client/queries/transactions).
+   * Read more in our [docs](https://www.prisma.io/docs/concepts/components/prisma-client/transactions).
    */
-  $transaction<P extends Prisma.PrismaPromise<any>[]>(arg: [...P], options?: { maxWait?: number, timeout?: number, isolationLevel?: Prisma.TransactionIsolationLevel }): runtime.Types.Utils.JsPromise<runtime.Types.Utils.UnwrapTuple<P>>
+  $transaction<P extends Prisma.PrismaPromise<any>[]>(arg: [...P], options?: { isolationLevel?: Prisma.TransactionIsolationLevel }): runtime.Types.Utils.JsPromise<runtime.Types.Utils.UnwrapTuple<P>>
 
   $transaction<R>(fn: (prisma: Omit<PrismaClient, runtime.ITXClientDenyList>) => runtime.Types.Utils.JsPromise<R>, options?: { maxWait?: number, timeout?: number, isolationLevel?: Prisma.TransactionIsolationLevel }): runtime.Types.Utils.JsPromise<R>
+
 
   $extends: runtime.Types.Extensions.ExtendsHook<"extends", Prisma.TypeMapCb<OmitOpts>, ExtArgs, runtime.Types.Utils.Call<Prisma.TypeMapCb<OmitOpts>, {
     extArgs: ExtArgs
@@ -209,6 +222,26 @@ export interface PrismaClient<
   get post(): Prisma.PostDelegate<ExtArgs, { omit: OmitOpts }>;
 
   /**
+   * `prisma.category`: Exposes CRUD operations for the **Category** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Categories
+    * const categories = await prisma.category.findMany()
+    * ```
+    */
+  get category(): Prisma.CategoryDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.postOnCategory`: Exposes CRUD operations for the **PostOnCategory** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PostOnCategories
+    * const postOnCategories = await prisma.postOnCategory.findMany()
+    * ```
+    */
+  get postOnCategory(): Prisma.PostOnCategoryDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
    * `prisma.profile`: Exposes CRUD operations for the **Profile** model.
     * Example usage:
     * ```ts
@@ -219,6 +252,7 @@ export interface PrismaClient<
   get profile(): Prisma.ProfileDelegate<ExtArgs, { omit: OmitOpts }>;
 }
 
-export function getPrismaClientClass(): PrismaClientConstructor {
+export function getPrismaClientClass(dirname: string): PrismaClientConstructor {
+  config.dirname = dirname
   return runtime.getPrismaClient(config) as unknown as PrismaClientConstructor
 }
