@@ -4,7 +4,7 @@ import { prisma } from "./generated/prisma.js";
 //connection will occur.
 import express from "express";
 import userRouter from "./routes/user.routes.js";
-import profileRouter from "./routes/profile.routes.js";
+import { default as profileRouter } from "./routes/profile.routes.js";
 const app = express();
 app.use("/profiles", profileRouter);
 app.use(express.json());
