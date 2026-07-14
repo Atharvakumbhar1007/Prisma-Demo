@@ -5,7 +5,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+  //url      = env("DATABASE_URL")
 }
 
 enum Role {
@@ -26,11 +26,12 @@ model User {
   name      String?
   role      Role     @default(USER)
   createdAt DateTime @default(now())
-
+  passwordHash String
   posts     Post[]
 
   @@map("users")
 }
+//Never store password as text, hash then and store
 
 model Post {
   id        Int         @id @default(autoincrement())
