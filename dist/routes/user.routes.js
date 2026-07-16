@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { prisma } from "../generated/prisma.js";
+import { registerUser, login } from "../controllers/user.controller.js";
 const router = Router();
 // Get all users
 router.get("/", async (req, res) => {
@@ -20,25 +21,33 @@ router.get("/:id", async (req, res) => {
     return res.json(user);
 });
 // Create multiple users
-router.post("/multiple", async (req, res) => {
-    const data = req.body;
-    const result = await prisma.user.createMany({
-        data,
-        // skipDuplicates: true,
-    });
-    return res.status(201).json(result);
-});
+// router.post(
+//   "/multiple",
+//   async (
+//     req: Request<{}, {}, CreateUserDto[]>,
+//     res: Response
+//   ) => {
+//     const data = req.body;
+//     const result = await prisma.user.createMany({
+//       data,
+//      // skipDuplicates: true,
+//     });
+//     return res.status(201).json(result);
+//   }
+// );
+router.post("/register", registerUser);
+router.post("/login", login);
 // Create one user
-router.post("/", async (req, res) => {
-    const { name, email } = req.body;
-    const user = await prisma.user.create({
-        data: {
-            name,
-            email,
-        },
-    });
-    res.status(201).json(user);
-});
+// router.post("/", async (req: Request, res: Response) => {
+//   const { name, email } = req.body;
+//   const user = await prisma.user.create({
+//     data: {
+//       name,
+//       email,
+//     },
+//   });
+//   res.status(201).json(user);
+// });
 // Update user
 router.put("/:id", async (req, res) => {
     const id = Number(req.params.id);

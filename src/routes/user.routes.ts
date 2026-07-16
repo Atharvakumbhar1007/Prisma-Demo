@@ -1,17 +1,19 @@
 import { Router, type Request, type Response } from "express";
 import { prisma } from "../generated/prisma.js";
 import { CreateUserDto } from "../dto/create-user.dto.js";
+import { registerUser, login } from "../controllers/user.controller.js";
+import { requireAuth, requireRole } from "../middleware/auth.middleware.js";
 
 const router = Router();
 
 // Get all users
-router.get("/", async (req: Request, res: Response) => {
+router.get("/", requireAuth, requireRole("ADMIN"), async (req: Request, res: Response) => {
   const users = await prisma.user.findMany();
   res.json(users);
 });
 
 // Get user by ID
-router.get("/:id", async (req: Request, res: Response) => {
+router.get("/:id", requireAuth, async (req: Request, res: Response) => {
   const id = Number(req.params.id);
 
   const user = await prisma.user.findUnique({
@@ -28,39 +30,40 @@ router.get("/:id", async (req: Request, res: Response) => {
 });
 
 // Create multiple users
-router.post(
-  "/multiple",
-  async (
-    req: Request<{}, {}, CreateUserDto[]>,
-    res: Response
-  ) => {
-    const data = req.body;
+// router.post(
+//   "/multiple",
+//   async (
+//     req: Request<{}, {}, CreateUserDto[]>,
+//     res: Response
+//   ) => {
+//     const data = req.body;
 
-    const result = await prisma.user.createMany({
-      data,
-     // skipDuplicates: true,
-    });
+//     const result = await prisma.user.createMany({
+//       data,
+//      // skipDuplicates: true,
+//     });
 
-    return res.status(201).json(result);
-  }
-);
-
+//     return res.status(201).json(result);
+//   }
+// );
+router.post("/register",registerUser);
+router.post("/login", login);
 // Create one user
-router.post("/", async (req: Request, res: Response) => {
-  const { name, email } = req.body;
+// router.post("/", async (req: Request, res: Response) => {
+//   const { name, email } = req.body;
 
-  const user = await prisma.user.create({
-    data: {
-      name,
-      email,
-    },
-  });
+//   const user = await prisma.user.create({
+//     data: {
+//       name,
+//       email,
+//     },
+//   });
 
-  res.status(201).json(user);
-});
+//   res.status(201).json(user);
+// });
 
 // Update user
-router.put("/:id", async (req: Request, res: Response) => {
+router.put("/:id", requireAuth, async (req: Request, res: Response) => {
   const id = Number(req.params.id);
   const { name, email } = req.body;
 
@@ -76,7 +79,7 @@ router.put("/:id", async (req: Request, res: Response) => {
 });
 
 // Delete user
-router.delete("/:id", async (req: Request, res: Response) => {
+router.delete("/:id", requireAuth, requireRole("ADMIN"), async (req: Request, res: Response) => {
   const id = Number(req.params.id);
 
   await prisma.user.delete({
