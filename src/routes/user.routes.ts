@@ -91,4 +91,9 @@ router.delete("/:id", requireAuth, requireRole("ADMIN"), async (req: Request, re
   });
 });
 
+router.get("/logout", (req: Request, res: Response)=>{
+  return res.json({message:"Logged Out. Delete token on front End"});
+})
 export default router;
+
+//ADD security , express validator , cors , helmet
